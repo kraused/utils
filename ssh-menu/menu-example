@@ -1,0 +1,25 @@
+; The scheme is
+;   name
+;   host
+;   user
+;   descr
+;   fqdn
+;   ip
+;   key
+host1
+host1.example.com
+user1
+First host
+host1.example.com
+
+/home/user1/key
+;
+host2
+host2
+user2
+Second host
+
+192.168.0.1
+
+
+;
