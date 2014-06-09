@@ -107,8 +107,10 @@ static int count_entries_in_file(FILE *fp)
 	int count;
 	int ch;
 
+	/* Missing files are treated like empty ones here
+	 * for convenience. */
 	if (unlikely(!fp))
-		return -1;
+		return 0;
 
 	fseek(fp, 0, SEEK_SET);
 
@@ -171,7 +173,7 @@ static int read_entries_from_file(FILE* fp, int n, struct entry *entries)
 	int i;
 
 	if (unlikely(!fp))
-		return 1;
+		return 0;
 	
 	fseek(fp, 0, SEEK_SET);
 
@@ -197,9 +199,7 @@ static int fill_entries(struct state *state)
 	state->entries     = NULL;
 
 	fp = open_rc_file();
-	if (unlikely(!fp))
-		return 1;
-		
+	
 	state->num_entries = count_entries_in_file(fp);
 	if (unlikely(state->num_entries < 0)) {
 		ret = 1;
@@ -221,7 +221,8 @@ static int fill_entries(struct state *state)
 	                             &state->entries[1]);
 
 out:
-	fclose(fp);
+	if (fp)
+		fclose(fp);
 	return ret;
 }
 
