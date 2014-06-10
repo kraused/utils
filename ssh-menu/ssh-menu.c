@@ -237,7 +237,7 @@ static char *merge(const char *str1, char ch, const char *str2)
 
 	tmp = mempcpy(str, str1, strlen(str1));
 	*tmp = ch;
-	mempcpy(tmp + 1, str2, strlen(str2));
+	*((char* )mempcpy(tmp + 1, str2, strlen(str2))) = 0x0;
 
 	return str;
 }
@@ -247,8 +247,8 @@ static int ssh(const struct state *state)
 	char *argv[MAX_ARGS];
 	int i;
 	const struct entry *entry = &state->entries[state->choice-1];
-	char *str1;
-	char *str2;
+	const char *str1;
+	const char *str2;
 	const char *exe;
 
 	i = 0;
@@ -278,7 +278,6 @@ static int ssh(const struct state *state)
 			str2 = entry->host;
 
 		argv[i++] = merge(str1, '@', str2);
-		argv[i++] = NULL;
 
 		exe = SSH;
 	}
