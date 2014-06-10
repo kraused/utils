@@ -267,15 +267,15 @@ static int ssh(const struct state *state)
 
 		str1 = NULL;
 		if (strlen(entry->user) > 0)
-			str1 = strdup(entry->user);
+			str1 = entry->user;
 
 		str2 = NULL;
 		if (strlen(entry->fqdn) > 0)
-			str2 = strdup(entry->fqdn);
+			str2 = entry->fqdn;
 		else if (strlen(entry->ip) > 0)
-			str2 = strdup(entry->ip);
+			str2 = entry->ip;
 		else
-			str2 = strdup(entry->host);
+			str2 = entry->host;
 
 		argv[i++] = merge(str1, '@', str2);
 		argv[i++] = NULL;
