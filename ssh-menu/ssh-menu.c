@@ -275,7 +275,7 @@ static int ssh(const struct state *state)
 		else if (strlen(entry->ip) > 0)
 			str2 = strdup(entry->ip);
 		else
-			str2 = strdup(entry->name);
+			str2 = strdup(entry->host);
 
 		argv[i++] = merge(str1, '@', str2);
 		argv[i++] = NULL;
