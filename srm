@@ -1,0 +1,13 @@
+#!/bin/bash
+# vi: tabstop=4:expandtab
+
+# A save rm
+
+for i in $*
+do
+    TARGET=/tmp/Trash$( readlink -f $i | sed 's+/+_+g' )-$(now -f)
+
+    mv $i $TARGET
+    chmod 000 $TARGET
+done
+
