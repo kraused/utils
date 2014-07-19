@@ -2,7 +2,7 @@
 .PHONY: install
 
 install:
-	install mkpasswd $(HOME)/bin
-	install now      $(HOME)/bin
-	install srm      $(HOME)/bin
+	install -m 500 mkpasswd 	$(HOME)/bin
+	install -m 500 now      	$(HOME)/bin
+	install -m 500 srm      	$(HOME)/bin
 
