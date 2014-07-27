@@ -14,6 +14,8 @@
 #define unlikely(x)	__builtin_expect(!!(x), 0)
 #define   likely(x)	__builtin_expect(!!(x), 1)
 
+#define MIN(x,y)	(((x) < (y)) ? (x) : (y))
+
 #define STRLEN		128
 #define MAX_ARGS	16
 
@@ -288,9 +290,18 @@ static int ssh(const struct state *state)
 static int render(struct state *state)
 {
 	int posy = 0;
-	int i;
+	int i, istart, iend;
 	
 	clear();
+
+	if (unlikely(LINES < 4)) {
+		mvprintw(0, 0, "Terminal height is too low.");
+
+		move(1, 0);
+		refresh();
+
+		return 1;
+	}
 
 	mvprintw(posy++, 0, "%s", state->argv[0]);
 	mvprintw(posy++, 0, "");
@@ -304,7 +315,10 @@ static int render(struct state *state)
 	         "DESCRIPTION");
 	attroff(COLOR_PAIR(2));
 
-	for (i = 0; i < state->num_entries; ++i) {
+	istart = ((state->choice - 1)/(LINES - 3))*(LINES - 3);
+	iend   = MIN(state->num_entries, istart + LINES - 3);
+
+	for (i = istart; i < iend; ++i) {
 		if ((i+1) == state->choice)
 			attron(COLOR_PAIR(3));
 
@@ -320,7 +334,6 @@ static int render(struct state *state)
 	}
 
 	move(1, 0);
-
 	refresh();
 
 	return 0;
@@ -352,6 +365,18 @@ static int loop(struct state *state)
 		case KEY_UP:
 			if (state->choice > 1) {
 				--state->choice;
+				state->flags |= STATE_FLAGS_SCREEN_IS_OUTDATED;
+			}
+			break;
+		case KEY_NPAGE:
+			if (state->choice + (LINES - 3) < state->num_entries) {
+				state->choice += (LINES - 3);
+				state->flags |= STATE_FLAGS_SCREEN_IS_OUTDATED;
+			}
+			break;
+		case KEY_PPAGE:
+			if (state->choice - (LINES - 3) > 0) {
+				state->choice -= (LINES - 3);
 				state->flags |= STATE_FLAGS_SCREEN_IS_OUTDATED;
 			}
 			break;
