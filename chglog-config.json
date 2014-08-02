@@ -1,0 +1,9 @@
+{
+	"chglog": "/var/log/chglog",    # Changelog file
+	"users": ["root"],      # List of permitted users
+	"mail": {
+		"to": ["your-mail@your-domain"]    # List of mail accounts to be notified about changes
+		# optional: "subject", "from", "server"
+	}
+}
+
