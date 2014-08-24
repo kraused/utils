@@ -101,7 +101,7 @@ class Client():
 #
 # Block all traffic from an IP.
 def iptables_input_block(ip):
-	cmd  = ["iptables", "-I", "INPUT", "1", "-j", "DROP", "-s", self.ip]
+	cmd  = ["iptables", "-I", "INPUT", "1", "-j", "DROP", "-s", ip]
 	p    = subprocess.Popen(cmd, \
 	                        stdout = subprocess.PIPE, \
 	                        stderr = subprocess.PIPE)
