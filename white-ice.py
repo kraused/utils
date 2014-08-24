@@ -100,7 +100,7 @@ class Client():
 
 #
 # Block all traffic from an IP.
-def ipbtables_input_block(ip):
+def iptables_input_block(ip):
 	cmd  = ["iptables", "-I", "INPUT", "1", "-j", "DROP", "-s", self.ip]
 	p    = subprocess.Popen(cmd, \
 	                        stdout = subprocess.PIPE, \
@@ -158,14 +158,15 @@ def spawn_tail_on_log():
 
 #
 # Process a single line from the log
-def process_line(line):
+def process_line(line, clients):
 	if '' == line:
 		return
 
 	# Regular expressions and corresponding client actions
 	handlers = [
-		[r'.*sshd.*Failed password.*from ([0-9\.]+) port.*'   , lambda z: z.handle_failure()],
-		[r'.*sshd.*Accepted password.*from ([0-9\.]+) port.*' , lambda z: z.handle_success()],
+		[r'.*sshd.*Failed password.*from ([0-9\.]+) port.*', lambda z: z.handle_failure()],
+		[r'.*sshd.*Did not receive identification string from ([0-9\.]+)', lambda z: z.handle_failure()],
+		[r'.*sshd.*Accepted password.*from ([0-9\.]+) port.*', lambda z: z.handle_success()],
 		[r'.*sshd.*Accepted publickey.*from ([0-9\.]+) port.*', lambda z: z.handle_success()]
 	]
 
@@ -189,11 +190,11 @@ def main():
 		tail = spawn_tail_on_log()
 		while 1:
 			ready, _, _ = select.select([tail.stdout], [], [], 1)
-			
+
 			if 1 == QUIT:
 				break
 			if 1 == len(ready):
-				process_line(tail.stdout.readline())
+				process_line(tail.stdout.readline(), clients)
 
 	finally:
 		tail.terminate()
@@ -203,13 +204,25 @@ def main():
 # daemonize
 if not DEBUG:
 	os.umask(0)
-	pid = os.fork()
-	if 0 != pid:
+
+	if 0 != os.fork():
 		sys.exit(0)
-	
+
 	os.chdir("/")
 	os.setsid()
-	
+
+#	if 0 != os.fork():
+#		sys.exit(0)
+
+	# Important: Close all file handles. Otherwise we will see
+	# zombie Python processes when starting white-ice from a
+	# cron job.
+	for i in range(1024):	# Should be enough
+		try:
+			os.close(i)
+		except:
+			pass
+
 	sys.stdin  = open(os.devnull, "w")
 	sys.stderr = open(os.devnull, "w")
 	sys.stderr = open(os.devnull, "w")
