@@ -36,8 +36,9 @@ class Client():
 		global DEBUG
 		global MAX_FAILS
 
-		if not DEBUG and self.blocked:
-			syslog.syslog(syslog.LOG_WARNING, "Client %s should already be blocked" % self.ip)
+	#	Can happen if failed ssh connections come in faster than we can block the dumpass
+	#	if not DEBUG and self.blocked:
+	#		syslog.syslog(syslog.LOG_WARNING, "Client %s should already be blocked." % self.ip)
 
 		self.fails += 1
 		if self.fails > MAX_FAILS:
@@ -46,8 +47,8 @@ class Client():
 	#
 	# Handle a successfull login.
 	def handle_success(self):
-		if not DEBUG and self.blocked:
-			syslog.syslog(syslog.LOG_WARNING, "Client %s should have been blocked." % self.ip)
+	#	if not DEBUG and self.blocked:
+	#		syslog.syslog(syslog.LOG_WARNING, "Client %s should have been blocked." % self.ip)
 
 		self.fails = 0
 
