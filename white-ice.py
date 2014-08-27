@@ -225,7 +225,7 @@ if not DEBUG:
 			pass
 
 	sys.stdin  = open(os.devnull, "w")
-	sys.stderr = open(os.devnull, "w")
+	sys.stdout = open(os.devnull, "w")
 	sys.stderr = open(os.devnull, "w")
 
 QUIT = 0
