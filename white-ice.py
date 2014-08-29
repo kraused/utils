@@ -27,7 +27,6 @@ class Client():
 		self.ip        = ip
 		self.fails     = 0
 		self.blocked   = False
-		self.rulenum   = -1
 		self.blockedat = None
 
 	#
@@ -62,15 +61,11 @@ class Client():
 
 		ret = iptables_input_block(self.ip)
 
-		if 0 == ret:
-			syslog.syslog(syslog.LOG_INFO, "Succesfully blocked %s.\n" % self.ip)
-		else:
+		if 0 != ret:
 			syslog.syslog(syslog.LOG_ERR, "Failed to block %s (exit code %d)\n" % (self.ip, ret))
 			return
 
-		ret, self.rulenum = iptables_input_rulenum(ip)
-		if self.rulenum < 1:
-			syslog.syslog(syslog.LOG_WARNING, "Failed to receive rule number for %s.\n" % self.ip)
+		syslog(syslog.LOG_WARNING, "Succesfully blocked %s.\n" % self.ip)
 
 		self.blocked   = True
 		self.blockedat = datetime.datetime.now()
@@ -84,11 +79,12 @@ class Client():
 			syslog.syslog(syslog.LOG_ERR, "%s is not blocked. Cannot unblock.\n")
 			return
 
-		if self.rulenum < 1:
-			syslog.syslog(syslog.LOG_ERR, "Invalid rule number for %s. Cannot unblock.\n" % self.ip)
+		ret, rulenum = iptables_input_rulenum(self.ip)
+		if 0 == ret:
+			syslog.syslog(syslog.LOG_ERR, "Could not retrieve rule number for client %s.\n" % self.ip)
 			return
 
-		ret = iptables_input_unblock(self.rulenum)
+		ret = iptables_input_unblock(rulenum)
 		if 0 == ret:
 			syslog.syslog(syslog.LOG_INFO, "Succesfully unblocked %s.\n" % self.ip)
 		else:
@@ -97,7 +93,6 @@ class Client():
 
 		self.blocked   = False
 		self.blockedat = None
-		self.rulenum   = -1
 
 #
 # Block all traffic from an IP.
