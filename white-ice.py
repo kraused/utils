@@ -166,6 +166,7 @@ def process_line(line, clients):
 	# Regular expressions and corresponding client actions
 	handlers = [
 		[r'.*sshd.*Failed password.*from ([0-9\.]+) port.*', lambda z: z.handle_failure()],
+		[r'.*sshd.*Invalid user.*from ([0-9\.]+)', lambda z: z.handle_failure()],
 		[r'.*sshd.*Did not receive identification string from ([0-9\.]+)', lambda z: z.handle_failure()],
 		[r'.*sshd.*Accepted password.*from ([0-9\.]+) port.*', lambda z: z.handle_success()],
 		[r'.*sshd.*Accepted publickey.*from ([0-9\.]+) port.*', lambda z: z.handle_success()]
