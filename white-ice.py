@@ -116,19 +116,24 @@ def iptables_input_block(ip):
 def iptables_input_rulenum(ip):
 	rulenum = -1
 
-	cmd  = ["iptables", "-vnL", "INPUT", "--line-numbers"]
-	p    = subprocess.Popen(cmd, \
-	                        stdout = subprocess.PIPE, \
-	                        stderr = subprocess.PIPE)
-	o, e = p.communicate()
-	ret  = p.wait()
+	try:
+		cmd  = ["iptables", "-vnL", "INPUT", "--line-numbers"]
+		p    = subprocess.Popen(cmd, \
+		                        stdout = subprocess.PIPE, \
+		                        stderr = subprocess.PIPE)
+		o, e = p.communicate()
+		ret  = p.wait()
 
-	if 0 == ret:
-		for line in [x for x in map(lambda z: z.strip(), o.split("\n")) if len(x) > 0]:
-			cols = [x for x in map(lambda z: z.strip(), line.split()) if len(x) > 0]
-			if ip == cols[8]:
-				rulenum = int(cols[0])
-				break
+		if 0 == ret:
+			for line in [x for x in map(lambda z: z.strip(), o.split("\n")) if len(x) > 0]:
+				cols = [x for x in map(lambda z: z.strip(), line.split()) if len(x) > 0]
+				if len(cols) < 9 or "DROP" != cols[3]:
+					continue
+				if ip == cols[8]:
+					rulenum = int(cols[0])
+					break
+	except:
+		return -1, -1
 
 	return ret, rulenum
 
