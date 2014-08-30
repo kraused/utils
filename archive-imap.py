@@ -118,11 +118,12 @@ for _, msglist in messages.iteritems():
 			if msg[IDX_DATE] > x[IDX_DATE]:
 				x[IDX_DATE] = msg[IDX_DATE]
 
-purged = 0
+timediff = int(args["older_than"][0])
+purged   = 0
 
 for _, msglist in messages.iteritems():
 	for msg in msglist:
-		if (now - msg[IDX_TIMESTAMP]) > datetime.timedelta(days = int(args["older_than"][0])):
+		if (timediff < 0) or ((now - msg[IDX_TIMESTAMP]) > datetime.timedelta(days = timediff)):
 	 		ok, w = ctx.uid("fetch", msg[IDX_UID], '(BODY[])')
 	 		if "OK" != ok:
 	 			raise Exception("Fetching the body failed.")
