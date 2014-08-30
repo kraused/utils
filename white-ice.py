@@ -61,11 +61,11 @@ class Client():
 
 		ret = iptables_input_block(self.ip)
 
-		if 0 != ret:
+		if 0 == ret:
+			syslog.syslog(syslog.LOG_INFO, "Succesfully blocked %s.\n" % self.ip)
+		else:
 			syslog.syslog(syslog.LOG_ERR, "Failed to block %s (exit code %d)\n" % (self.ip, ret))
 			return
-
-		syslog(syslog.LOG_WARNING, "Succesfully blocked %s.\n" % self.ip)
 
 		self.blocked   = True
 		self.blockedat = datetime.datetime.now()
