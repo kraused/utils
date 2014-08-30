@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser(description = "Download e-mails from IMAP serve
 
 parser.add_argument("-H", "--host"  , nargs = 1, required = True)
 parser.add_argument("-u", "--user"  , nargs = 1, required = True)
+parser.add_argument("-p", "--passwd", nargs = 1)
 parser.add_argument("-i", "--inbox" , nargs = 1, required = True)
 parser.add_argument("-T", "--trash" , nargs = 1, required = True)
 parser.add_argument("-o", "--outdir", nargs = 1, required = True)
@@ -28,8 +29,10 @@ args = vars(args)
 if not os.path.isdir(args["outdir"][0]):
 	raise Exception("Directory '%s' does not exist." % args["outdir"][0])
 
-
-pwd  = getpass.getpass()
+if "passwd" in args.keys():
+	pwd = args["passwd"][0]
+else:
+	pwd = getpass.getpass()
 
 ctx = imaplib.IMAP4_SSL(args["host"][0])
 
