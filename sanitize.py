@@ -16,6 +16,8 @@ parser.add_argument("directory", help = "Directory to scan")
 args = parser.parse_args()
 
 for f in os.listdir(args.directory):
+	if os.path.isdir("/".join([args.directory, f])):
+		continue
 
 	g = None
 	if args.md5sum:
