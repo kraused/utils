@@ -19,6 +19,7 @@ PROGNAME  = "white-ice"
 DEBUG     = False
 SSHD_LOG  = "/var/log/secure"
 MAX_FAILS = 3
+IPTABLES  = "/sbin/iptables"
 
 #
 # Record of a client
@@ -97,7 +98,7 @@ class Client():
 #
 # Block all traffic from an IP.
 def iptables_input_block(ip):
-	cmd  = ["iptables", "-I", "INPUT", "1", "-j", "DROP", "-s", ip]
+	cmd  = [IPTABLES, "-I", "INPUT", "1", "-j", "DROP", "-s", ip]
 	p    = subprocess.Popen(cmd, \
 	                        stdout = subprocess.PIPE, \
 	                        stderr = subprocess.PIPE)
@@ -112,7 +113,7 @@ def iptables_input_rulenum(ip):
 	rulenum = -1
 
 	try:
-		cmd  = ["iptables", "-vnL", "INPUT", "--line-numbers"]
+		cmd  = [IPTABLES, "-vnL", "INPUT", "--line-numbers"]
 		p    = subprocess.Popen(cmd, \
 		                        stdout = subprocess.PIPE, \
 		                        stderr = subprocess.PIPE)
@@ -138,7 +139,7 @@ def iptables_input_unblock(rulenum):
 	if -1 == rulenum:
 		return 1
 
-	cmd  = ["iptables", "-D", "INPUT", "d" % rulenum]
+	cmd  = [IPTABLES, "-D", "INPUT", "d" % rulenum]
 	p    = subprocess.Popen(cmd, \
 	                        stdout = subprocess.PIPE, \
 	                        stderr = subprocess.PIPE)
@@ -197,10 +198,13 @@ def main():
 				break
 			if 1 == len(ready):
 				process_line(tail.stdout.readline(), clients)
-
+	except Exception as e:
+		syslog.syslog(syslog.LOG_ERR, "Caught exception: %s\n" % str(e))
 	finally:
 		tail.terminate()
 		tail.wait()
+
+		syslog.syslog(syslog.LOG_INFO, "Quiting main().\n")
 
 #
 # daemonize
