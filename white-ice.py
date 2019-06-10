@@ -12,8 +12,8 @@ import signal
 import select
 
 
-# The name "white ice" is a homage to the black ice in W. Gibson's "Burning Chrome"
-# short story. Black ice is a countermeasure that kills intrusiors. White ice is thus
+# The name "white ice" is an homage to the black ice in W. Gibson's "Burning Chrome"
+# short story. Black ice is a countermeasure that kills intruders. White ice is thus
 # the opposite and a rather harmless and simple intrusion countermeasure.
 PROGNAME  = "white-ice"
 DEBUG     = False
