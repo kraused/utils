@@ -89,13 +89,17 @@ for uid in data[0].split():
 		fmt = "%d %b %Y %H:%M"
 	
 	date = datetime.datetime.strptime(" ".join(tmp[0:4]), fmt)
-	
-	if len(tmp) > 4:
-		# FIXME We need a more generic way to handle this
-		if "EDT" == tmp[4]:
-			date = date + datetime.timedelta(hours = -4)
-		else:
-			date = date + datetime.timedelta(hours = int(tmp[4][0:3]))
+
+	try:
+		if len(tmp) > 4:
+			# FIXME We need a more generic way to handle this
+			if "EDT" == tmp[4]:
+				date = date + datetime.timedelta(hours = -4)
+			else:
+				date = date + datetime.timedelta(hours = int(tmp[4][0:3]))
+	except:
+		print(tmp)
+		print(header)
 
 	if header["message-id"] in messages.keys():
 		messages[header["message-id"]].append([date, date, uid, header])
